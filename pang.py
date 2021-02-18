@@ -17,6 +17,15 @@ screen=pygame.display.set_mode((screen_width, screen_height))
 backgrond=pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/background.jpg")
 
 
+#character set
+character=pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/character.png")
+character_size=character.get_rect().size
+character_width=character_size[0]
+character_height=character_size[1]
+character_x_pos=screen_width/2-character_width/2
+character_y_pos=screen_height-character_height
+
+
 pygame.display.set_caption("Pang Game")
 
 #Loop for event
@@ -27,6 +36,7 @@ while running:
             running=False
     
     screen.blit(backgrond, (0,0)) ## screen.fill((0,0,255))
+    screen.blit(character,(character_x_pos,character_y_pos))
     pygame.display.update()
 
 pygame.quit()
