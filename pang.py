@@ -10,8 +10,10 @@ screen_width=640
 screen_height=480
 pygame.display.list_modes()
 
-
 screen=pygame.display.set_mode((screen_width, screen_height))
+
+#FPS
+clock = pygame.time.Clock()
 
 #Background image setting
 backgrond=pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/background.jpg")
@@ -31,9 +33,13 @@ pygame.display.set_caption("Pang Game")
 to_x=0
 to_y=0
 
+#character moving speed
+character_speed=0.6
 #Loop for event
 running = True
 while running:
+    dt = clock.tick(60)
+    print(f"fps : #{clock.get_fps()}")
     for event in pygame.event.get():        
         if event.type==pygame.QUIT:
             running=False
@@ -41,26 +47,26 @@ while running:
         #Key event
         if event.type == pygame.KEYDOWN:
             if  event.key == pygame.K_LEFT:
-                to_x -= 1 
+                to_x -= character_speed 
             elif  event.key == pygame.K_RIGHT:
-                to_x += 1 
+                to_x += character_speed 
             elif  event.key == pygame.K_UP:
-                to_y -= 1 
+                to_y -= character_speed 
             elif  event.key == pygame.K_DOWN:
-                to_y += 1 
+                to_y += character_speed 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or pygame.K_RIGHT:
                 to_x=0
             elif event.key == pygame.K_UP or pygame.K_DOWN:
                 to_y=0
 
-    character_x_pos += to_x
-    character_y_pos += to_y
+    character_x_pos += to_x * dt
+    character_y_pos += to_y * dt
 
     if character_x_pos < 0:
-        character_x_pos=0
+        character_x_pos=0        
     elif character_x_pos > screen_width-character_width:
-        character_x_pos=screen_width-character_width
+        character_x_pos=screen_width-character_width        
     elif character_y_pos < 0:
         character_y_pos=0
     elif character_y_pos > screen_height-character_height:
