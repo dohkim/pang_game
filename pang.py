@@ -35,11 +35,23 @@ to_y=0
 
 #character moving speed
 character_speed=0.6
+
+
+
+# enemy
+enemy = pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/enemy.png")
+enemy_size=enemy.get_rect().size
+enemy_width=enemy_size[0]
+enemy_height=enemy_size[1]
+enemy_x_pos=(screen_width/2)-(enemy_width/2)
+enemy_y_pos=(screen_height/2)-(enemy_height/2)
+
+
 #Loop for event
 running = True
-while running:
-    dt = clock.tick(60)
-    print(f"fps : #{clock.get_fps()}")
+while running:    
+    dt = clock.tick(60) # set FPS
+    # print(f"fps : #{clock.get_fps()}")
     for event in pygame.event.get():        
         if event.type==pygame.QUIT:
             running=False
@@ -54,11 +66,13 @@ while running:
                 to_y -= character_speed 
             elif  event.key == pygame.K_DOWN:
                 to_y += character_speed 
-        if event.type == pygame.KEYUP:
+        
+        if event.type == pygame.KEYUP:            
             if event.key == pygame.K_LEFT or pygame.K_RIGHT:
                 to_x=0
-            elif event.key == pygame.K_UP or pygame.K_DOWN:
+            if event.key == pygame.K_UP or pygame.K_DOWN:
                 to_y=0
+        
 
     character_x_pos += to_x * dt
     character_y_pos += to_y * dt
@@ -72,8 +86,26 @@ while running:
     elif character_y_pos > screen_height-character_height:
         character_y_pos=screen_height-character_height
 
+
+    #Crash handling
+    character_rect = character.get_rect()
+    character_rect.left = character_x_pos
+    character_rect.top = character_y_pos
+
+    enemy_rect=enemy.get_rect()
+    enemy_rect.left = enemy_x_pos
+    enemy_rect.top=enemy_y_pos
+
+    #Crash cehck
+    if character_rect.colliderect(enemy_rect):
+        print("Crashed")
+        running = False
+
+    
+
     screen.blit(backgrond, (0,0)) ## screen.fill((0,0,255))
-    screen.blit(character,(character_x_pos,character_y_pos))
+    screen.blit(character,(character_x_pos,character_y_pos))#positioning Character
+    screen.blit(enemy,(enemy_x_pos,enemy_y_pos)) #enemy position
     pygame.display.update()
 
 pygame.quit()
