@@ -77,14 +77,9 @@ balls.append({
     "init_spd_y": ball_speed_y[0] #ball drop speed
 })
 
+weapon_to_remove = -1
+ball_to_remove = -1
 
-# enemy
-enemy = pygame.image.load(os.path.join(image_path,"enemy.png"))
-enemy_size=enemy.get_rect().size
-enemy_width=enemy_size[0]
-enemy_height=enemy_size[1]
-enemy_x_pos=(screen_width/2)-(enemy_width/2)
-enemy_y_pos=(screen_height/2)-(enemy_height/2)
 
 #Font
 game_font = pygame.font.Font(None, 40)
@@ -155,15 +150,50 @@ while running:
     character_rect = character.get_rect()
     character_rect.left = character_x_pos
     character_rect.top = character_y_pos
+    
+    for ball_idx, ball_val in enumerate(balls):
+        ball_pos_x=ball_val["pos_x"]
+        ball_pos_y=ball_val["pos_y"]
+        ball_img_idx=ball_val["img_idx"]
 
-    enemy_rect=enemy.get_rect()
-    enemy_rect.left = enemy_x_pos
-    enemy_rect.top=enemy_y_pos
+        #ball rect infor
+        ball_rect = ball_images[ball_img_idx].get_rect()
+        ball_rect.left = ball_pos_x
+        ball_rect.top = ball_pos_y
 
-    #Crash cehck
-    if character_rect.colliderect(enemy_rect):
-        print("Crashed")
-        running = False
+        #when ball crash to character
+        if character_rect.colliderect(ball_rect):
+            running = False
+            break
+        
+        #ball and weapon crash
+        for weapon_idx, weapon_val in enumerate(weapons):
+            weapon_pos_x = weapon_val[0]
+            weapon_pos_y = weapon_val[1]
+            
+            #weapon rect infor update
+            weapon_rect = weapon.get_rect()
+            weapon_rect.left = weapon_pos_x
+            weapon_rect.top = weapon_pos_y
+
+            if weapon_rect.colliderect(ball_rect):
+                weapon_to_remove = weapon_idx#removre weapon
+                ball_to_remove=ball_idx
+                break
+
+
+
+
+    #ball and weapon remove if crashed
+    if ball_to_remove > -1:
+        del balls[ball_to_remove]
+        ball_to_remove = -1
+
+    
+    if weapon_to_remove > -1:
+        del weapons[weapon_to_remove]
+        weapon_to_remove = -1
+
 
     
 
