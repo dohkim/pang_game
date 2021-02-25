@@ -39,13 +39,43 @@ character_y_pos=screen_height-character_height - stage_height
 
 
 
-#destination coordinate
-to_x=0
-to_y=0
-
+#character moving direction
+character_to_x=0
 #character moving speed
 character_speed=0.6
 
+#Weapon
+weapon=pygame.image.load(os.path.join(image_path, "weapon.png"))
+weapon_size = weapon.get_rect().size
+weapon_width = weapon_size[0]
+
+#weapon will be able multiple shoot 
+weapons=[]
+weapon_speed = 20
+
+#Baloong setting
+ball_images=[
+    pygame.image.load(os.path.join(image_path, "balloon1.png")),
+    pygame.image.load(os.path.join(image_path, "balloon2.png")),
+    pygame.image.load(os.path.join(image_path, "balloon3.png")),
+    pygame.image.load(os.path.join(image_path, "balloon4.png"))
+]
+
+#set each balloon speed
+ball_speed_y = [-18,-15,-12,-9]
+
+#ball list
+balls=[]
+
+#init ball setup
+balls.append({
+    "pos_x": 50,    #ball x position
+    "pos_y": 50,    #ball y position
+    "img_idx" : 0, #ball image index
+    "to_x":3,   #ball movement (direction)
+    "to_y":-6,   #ball movement (direction)
+    "init_spd_y": ball_speed_y[0] #ball drop speed
+})
 
 
 # enemy
@@ -67,7 +97,7 @@ start_ticks = pygame.time.get_ticks()
 #Loop for event
 running = True
 while running:    
-    dt = clock.tick(60) # set FPS
+    dt = clock.tick(30) # set FPS
     # print(f"fps : #{clock.get_fps()}")
     for event in pygame.event.get():        
         if event.type==pygame.QUIT:
@@ -76,33 +106,50 @@ while running:
         #Key event
         if event.type == pygame.KEYDOWN:
             if  event.key == pygame.K_LEFT:
-                to_x -= character_speed 
+                character_to_x -= character_speed 
             elif  event.key == pygame.K_RIGHT:
-                to_x += character_speed 
-            elif  event.key == pygame.K_UP:
-                to_y -= character_speed 
-            elif  event.key == pygame.K_DOWN:
-                to_y += character_speed 
+                character_to_x += character_speed             
+            elif  event.key == pygame.K_SPACE:
+                weapon_x_pos = character_x_pos + (character_width / 2) - (weapon_width / 2)
+                weapon_y_pos = character_y_pos
+                weapons.append([weapon_x_pos,weapon_y_pos])
         
         if event.type == pygame.KEYUP:            
-            if event.key == pygame.K_LEFT or pygame.K_RIGHT:
-                to_x=0
-            if event.key == pygame.K_UP or pygame.K_DOWN:
-                to_y=0
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                character_to_x =0
+            
         
-
-    character_x_pos += to_x * dt
-    character_y_pos += to_y * dt
-
+    #character posisitoning
+    character_x_pos += character_to_x * dt
     if character_x_pos < 0:
         character_x_pos=0        
     elif character_x_pos > screen_width-character_width:
-        character_x_pos=screen_width-character_width        
-    elif character_y_pos < 0:
-        character_y_pos=0
-    elif character_y_pos > screen_height-character_height:
-        character_y_pos=screen_height-character_height
+        character_x_pos=screen_width-character_width            
 
+    #weapons positioning
+    weapons = [ [w[0],w[1] - weapon_speed] for w in weapons]
+    #weapon remove when reaching to top
+    weapons = [ [w[0],w[1]] for w in weapons if w[1] > 0]
+    #initial big ball positionning
+    for ball_idx, ball_val in enumerate(balls):
+        ball_pos_x=ball_val["pos_x"]
+        ball_pos_y=ball_val["pos_y"]
+        ball_img_idx=ball_val["img_idx"]
+        ball_size=ball_images[ball_img_idx].get_rect().size
+        ball_width=ball_size[0]
+        ball_height=ball_size[1]
+
+        #ball direction chages when reach to end
+        if ball_pos_x <=0 or ball_pos_x > screen_width - ball_width:
+            ball_val["to_x"] = ball_val["to_x"] * -1
+        
+        if ball_pos_y >= screen_height - stage_height - ball_height:
+            ball_val["to_y"] = ball_val["init_spd_y"]
+        else:
+            ball_val["to_y"] += 0.5 
+
+        ball_val["pos_x"] += ball_val["to_x"]
+        ball_val["pos_y"] += ball_val["to_y"]
 
     #Crash handling
     character_rect = character.get_rect()
@@ -121,9 +168,18 @@ while running:
     
 
     screen.blit(backgrond, (0,0)) ## screen.fill((0,0,255))
+    for weapon_x_pos, weapon_y_pos in weapons:
+        screen.blit(weapon, (weapon_x_pos, weapon_y_pos))
+
+    for idx, val in enumerate(balls):
+        ball_pos_x=val["pos_x"]
+        ball_pos_y=val["pos_y"]
+        ball_img_idx = val["img_idx"]
+        screen.blit(ball_images[ball_img_idx], (ball_pos_x, ball_pos_y))
+
     screen.blit(stage, (0,screen_height-stage_height)) 
     screen.blit(character,(character_x_pos,character_y_pos))#positioning Character
-    screen.blit(enemy,(enemy_x_pos,enemy_y_pos)) #enemy position
+    
     
     #Timer
     elaped_time = (pygame.time.get_ticks()-start_ticks) / 1000 #indicate as sec
