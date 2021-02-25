@@ -179,6 +179,36 @@ while running:
             if weapon_rect.colliderect(ball_rect):
                 weapon_to_remove = weapon_idx#removre weapon
                 ball_to_remove=ball_idx
+                
+                #if ball is not smallest, it splits to two smaller ball
+                if ball_img_idx < 3:
+                    ball_width=ball_rect.size[0]
+                    ball_height=ball_rect.size[1]
+
+                    small_ball_rect=ball_images[ball_img_idx+1].get_rect()
+                    small_ball_width = small_ball_rect.size[0]
+                    small_ball_height = small_ball_rect.size[1]
+
+                    #left direction
+                    balls.append({
+                        "pos_x": ball_pos_x + (ball_width/2) - (small_ball_width/2),    #ball x position
+                        "pos_y": ball_pos_y +(ball_height/2) - (small_ball_height/2),    #ball y position
+                        "img_idx" : ball_img_idx+1, #ball image index
+                        "to_x": -3,   #ball movement (direction)
+                        "to_y":-6,   #ball movement (direction)
+                        "init_spd_y": ball_speed_y[ball_img_idx+1] #ball drop speed
+                    })
+                    
+                    #right direction
+                    balls.append({
+                        "pos_x": ball_pos_x + (ball_width/2) - (small_ball_width/2),    #ball x position
+                        "pos_y": ball_pos_y +(ball_height/2) - (small_ball_height/2),    #ball y position
+                        "img_idx" : ball_img_idx+1, #ball image index
+                        "to_x": +3,   #ball movement (direction)
+                        "to_y":-6,   #ball movement (direction)
+                        "init_spd_y": ball_speed_y[ball_img_idx+1] #ball drop speed
+                    })
+
                 break
 
 
@@ -218,9 +248,9 @@ while running:
 
     screen.blit(timer, (10,10))
 
-    if total_time-elaped_time <=0:
-        print("Time Out")
-        running=False
+    # if total_time-elaped_time <=0:
+    #     print("Time Out")
+    #     running=False
 
     pygame.display.update()
 
