@@ -1,32 +1,42 @@
+import os
 import pygame
 from pygame.display import set_caption
 
 
-
-pygame.init() #initialized
+#initialized
+pygame.init()
 
 #set screen size
 screen_width=640
 screen_height=480
 pygame.display.list_modes()
-
 screen=pygame.display.set_mode((screen_width, screen_height))
+
+#Set game title
+pygame.display.set_caption("Pang Game")
 
 #FPS
 clock = pygame.time.Clock()
 
-#Background image setting
-backgrond=pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/background.jpg")
+current_path = os.path.dirname(__file__)
+image_path = os.path.join(current_path, "images")
 
+#Background image setting
+backgrond=pygame.image.load(os.path.join(image_path, "background.jpg"))
+
+#stage image
+stage=pygame.image.load(os.path.join(image_path, "stage.png"))
+stage_size = stage.get_rect().size
+stage_height = stage_size[1]
 
 #character set
-character=pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/character.png")
+character=pygame.image.load(os.path.join(image_path, "character.png"))
 character_size=character.get_rect().size
 character_width=character_size[0]
 character_height=character_size[1]
 character_x_pos=screen_width/2-character_width/2
-character_y_pos=screen_height-character_height
-pygame.display.set_caption("Pang Game")
+character_y_pos=screen_height-character_height - stage_height
+
 
 
 #destination coordinate
@@ -39,7 +49,7 @@ character_speed=0.6
 
 
 # enemy
-enemy = pygame.image.load("C:/Users/tank2/Documents/Local_code/python/pygame_pang/image/enemy.png")
+enemy = pygame.image.load(os.path.join(image_path,"enemy.png"))
 enemy_size=enemy.get_rect().size
 enemy_width=enemy_size[0]
 enemy_height=enemy_size[1]
@@ -111,6 +121,7 @@ while running:
     
 
     screen.blit(backgrond, (0,0)) ## screen.fill((0,0,255))
+    screen.blit(stage, (0,screen_height-stage_height)) 
     screen.blit(character,(character_x_pos,character_y_pos))#positioning Character
     screen.blit(enemy,(enemy_x_pos,enemy_y_pos)) #enemy position
     
