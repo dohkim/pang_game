@@ -1,6 +1,8 @@
+
+
 import os
 import pygame
-from pygame.display import set_caption
+from pygame.display import set_caption, update
 
 
 #initialized
@@ -84,9 +86,10 @@ ball_to_remove = -1
 #Font
 game_font = pygame.font.Font(None, 40)
 
-#starttime
-total_time = 10
+total_time = 100
 start_ticks = pygame.time.get_ticks()
+
+game_result = "Game Over"
 
 
 #Loop for event
@@ -163,6 +166,7 @@ while running:
 
         #when ball crash to character
         if character_rect.colliderect(ball_rect):
+            game_result="Game Over"
             running = False
             break
         
@@ -224,6 +228,10 @@ while running:
         del weapons[weapon_to_remove]
         weapon_to_remove = -1
 
+    if len(balls)==0:
+        game_result = "Mission Completed"
+        running=False
+
 
     
 
@@ -244,16 +252,19 @@ while running:
     #Timer
     elaped_time = (pygame.time.get_ticks()-start_ticks) / 1000 #indicate as sec
     
-    timer = game_font.render(str(int(total_time - elaped_time)),True,(255,255,255)) #Font, True, Font color
-
+    timer = game_font.render("Time : {}".format(int(total_time - elaped_time)),True,(255,255,255)) #Font, True, Font color
     screen.blit(timer, (10,10))
 
-    # if total_time-elaped_time <=0:
-    #     print("Time Out")
-    #     running=False
+    if total_time-elaped_time <=0:
+        game_result="Time Over"
+        running=False
 
     pygame.display.update()
 
-
-pygame.time.delay(2000)
+#game over message 
+msg=game_font.render(game_result, True, (255,255,0))
+msg_rect = msg.get_rect(center=(int(screen_width/2), int(screen_height/2)))
+screen.blit(msg,msg_rect)
+pygame.display.update()
+pygame.time.delay(1000)
 pygame.quit()
