@@ -214,6 +214,9 @@ while running:
                     })
 
                 break
+        else:
+            continue
+        break
 
 
 
